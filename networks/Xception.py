@@ -41,20 +41,17 @@ class Block(nn.Module):
         filters = in_filters
         if grow_first:
             rep.append(self.relu)
-            # 这里的卷积不改变特征图尺寸
             rep.append(SeparableConv2d(in_filters, out_filters, kernel_size=3, stride=1, padding=1, bias=False))
             rep.append(nn.BatchNorm2d(out_filters))
             filters = out_filters
 
         for i in range(reps - 1):
             rep.append(self.relu)
-            # 这里的卷积不改变特征图尺寸
             rep.append(SeparableConv2d(filters, filters, kernel_size=3, stride=1, padding=1, bias=False))
             rep.append(nn.BatchNorm2d(filters))
 
         if not grow_first:
             rep.append(self.relu)
-            # 这里的卷积不改变特征图尺寸
             rep.append(SeparableConv2d(in_filters, out_filters, kernel_size=3, stride=1, padding=1, bias=False))
             rep.append(nn.BatchNorm2d(out_filters))
 
@@ -63,8 +60,6 @@ class Block(nn.Module):
         else:
             rep[0] = nn.ReLU(inplace=False)
 
-        # Middle flow 的stride恒为1，因此无需做池化，而其余块需要
-        # 其余块的stride=2，因此这里的最大池化可以将特征图尺寸减半
         if strides != 1:
             rep.append(nn.MaxPool2d(kernel_size=3, stride=strides, padding=1))
         self.rep = nn.Sequential(*rep)
@@ -95,7 +90,6 @@ class Xception(nn.Module):
         self.bn2 = nn.BatchNorm2d(64)
         # do relu here
 
-        # Block中的参数顺序：in_filters,out_filters,reps,stride,start_with_relu,grow_first
         self.block1 = Block(64, 128, 2, 2, start_with_relu=False, grow_first=True)
         self.block2 = Block(128, 256, 2, 2, start_with_relu=True, grow_first=True)
         self.block3 = Block(256, 728, 2, 2, start_with_relu=True, grow_first=True)
