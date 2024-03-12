@@ -6,9 +6,9 @@ from networks.SENet import SENModule
 from networks.SPPNet import SPPLayer
 
 
-class CustomModel(nn.Module):
+class FeatureExtractionModel(nn.Module):
     def __init__(self, num_levels_spp=4):
-        super(CustomModel, self).__init__()
+        super(FeatureExtractionModel, self).__init__()
         self.xception = Xception()
         self.sen_module = SENModule(in_channels=728, out_channels=728)
         self.spp_layer = SPPLayer(in_channels=2048, num_levels=num_levels_spp, pool_type='max_pool')
@@ -29,7 +29,7 @@ class CustomModel(nn.Module):
 
 # Example usage
 if __name__ == '__main__':
-    model = CustomModel()
+    model = FeatureExtractionModel()
     input_image = torch.randn(1, 3, 256, 256)
     output_feature_vector = model(input_image)
     print(output_feature_vector.shape)
