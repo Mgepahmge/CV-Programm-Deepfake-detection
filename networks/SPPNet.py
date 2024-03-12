@@ -1,34 +1,43 @@
 import math
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 
 
-# 构建SPP层(空间金字塔池化层)
-class SPPLayer(torch.nn.Module):
-    def __init__(self, num_levels, pool_type='max_pool'):
+class SPPLayer(nn.Module):
+    def __init__(self, in_channels, num_levels, pool_type='max_pool'):
         super(SPPLayer, self).__init__()
-
+        self.in_channels = in_channels
         self.num_levels = num_levels
         self.pool_type = pool_type
 
     def forward(self, x):
-        num, c, h, w = x.size()  # num:样本数量 c:通道数 h:高 w:宽
+        batch_size, channels, height, width = x.size()
+        spp_tensors = []
+
         for i in range(self.num_levels):
             level = i + 1
-            kernel_size = (math.ceil(h / level), math.ceil(w / level))
-            stride = (math.ceil(h / level), math.ceil(w / level))
-            pooling = (
-            math.floor((kernel_size[0] * level - h + 1) / 2), math.floor((kernel_size[1] * level - w + 1) / 2))
+            kernel_size = (math.ceil(height / level), math.ceil(width / level))
+            stride = (math.ceil(height / level), math.ceil(width / level))
+            padding = (
+                math.floor((kernel_size[0] * level - height + 1) / 2),
+                math.floor((kernel_size[1] * level - width + 1) / 2))
 
-            # 选择池化方式
             if self.pool_type == 'max_pool':
-                tensor = F.max_pool2d(x, kernel_size=kernel_size, stride=stride, padding=pooling).view(num, -1)
-            if self.pool_type == 'avg_pool':
-                tensor = F.avg_pool2d(x, kernel_size=kernel_size, stride=stride, padding=pooling).view(num, -1)
+                tensor = F.max_pool2d(x, kernel_size=kernel_size, stride=stride, padding=padding)
+            elif self.pool_type == 'avg_pool':
+                tensor = F.avg_pool2d(x, kernel_size=kernel_size, stride=stride, padding=padding)
+            tensor = F.interpolate(tensor, size=(height, width), mode='bilinear', align_corners=True)
 
-            # 展开、拼接
-            if (i == 0):
-                SPP = tensor.view(num, -1)
-            else:
-                SPP = torch.cat((SPP, tensor.view(num, -1)), 1)
-        return SPP
+            spp_tensors.append(tensor)
+
+        spp_tensors.append(x)
+        spp_output = torch.cat(spp_tensors, dim=1)
+
+        return spp_output
+
+
+if __name__ == '__main__':
+    spp_layer = SPPLayer(in_channels=2048, num_levels=4, pool_type='max_pool')
+    x = torch.randn(1, 2048, 8, 8)
+    print(spp_layer.forward(x).shape)
