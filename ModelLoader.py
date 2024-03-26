@@ -140,9 +140,9 @@ class ModelLoader:
 
 
 if __name__ == '__main__':
-    trainer = ModelLoader(model=Meso4, model_path="D:/Python项目/CV-Programm-Deepfake-detection/model.pth")
+    trainer = ModelLoader(model=Meso4, model_path="models/model.pth")
     test_loader = imageLoader(
-        folder_path="D:/Python项目/CV-Programm-Deepfake-detection/dataset/real_vs_fake/real-vs-fake/test/real", label=0,
+        folder_path="dataset/real_vs_fake/real-vs-fake/test/real", label=0,
         step=100)
     image, label = next(test_loader)
     result = trainer.model.forward(image)
