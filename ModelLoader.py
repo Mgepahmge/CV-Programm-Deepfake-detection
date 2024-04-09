@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from ImageLoader import imageLoader
+from FileLoader import imageTensorLoader
 import random
 from tqdm import tqdm
 from networks.mesonet import Meso4, MesoInception4
@@ -10,6 +10,9 @@ from functools import singledispatchmethod
 
 
 class ModelLoader:
+    """
+    模型加载器，用于加载模型并保存模型。
+    """
     def __init__(self, model=Meso4, model_path=None):
         """
         :param model: 选择采用模型(Meso4/MesoInception4)
@@ -58,8 +61,8 @@ class ModelLoader:
         criterion = nn.BCELoss()
         optimizer = optim.Adam(self.model.parameters(), lr=learning_rate, weight_decay=weight_decay)
         for epoch in range(num_epochs):
-            fake_loader = imageLoader(fake_path, 1, batch_size)
-            real_loader = imageLoader(real_path, 0, batch_size)
+            fake_loader = imageTensorLoader(fake_path, 1, batch_size)
+            real_loader = imageTensorLoader(real_path, 0, batch_size)
             total_loss = 0
             with tqdm(total=iteration_nums, desc=f'批次 {epoch + 1}/{num_epochs}', position=0,
                       leave=True) as progress_bar:
@@ -89,9 +92,15 @@ class ModelLoader:
         print("训练结束！")
 
     def test(self, fake_path: str, real_path: str, iteration_nums=1000, draw_chart=False):
-        fake_loader = imageLoader(fake_path, 1, 1)
-        real_loader = imageLoader(real_path, 1, 1)
-        result_list = []
+        """
+        :param fake_path: 换脸图片训练集地址
+        :param real_path: 真实图片训练集地址
+        :param iteration_nums: 图片个数
+        :param draw_chart: 是否画图
+        :return:
+        """
+        fake_loader = imageTensorLoader(fake_path, 1, 1)
+        real_loader = imageTensorLoader(real_path, 1, 1)
         outputs = []
         labels = []
         with tqdm(total=iteration_nums, desc=f'测试中', position=0,
@@ -126,22 +135,10 @@ class ModelLoader:
 
         return sum(result_list) / len(result_list)
 
-    @singledispatchmethod
-    def predict(self, images):
-        prediction = self.model.forward(images)
-        prediction = torch.squeeze(prediction).tolist()
-        return prediction
-
-    @predict.register(dict)
-    def _(self, images: dict):
-        prediction = {}
-        for key in images.keys():
-            prediction[key] = torch.squeeze(self.model.forward(images[key])).tolist()
-
 
 if __name__ == '__main__':
     trainer = ModelLoader(model=Meso4, model_path="models/model.pth")
-    test_loader = imageLoader(
+    test_loader = imageTensorLoader(
         folder_path="dataset/real_vs_fake/real-vs-fake/test/real", label=0,
         step=100)
     image, label = next(test_loader)

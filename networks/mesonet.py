@@ -3,7 +3,7 @@ import argparse
 
 import torch
 import torch.nn as nn
-from ImageLoader import imageLoader
+from FileLoader import imageTensorLoader
 import torch.nn.functional as F
 import math
 import torchvision
@@ -155,7 +155,7 @@ class MesoInception4(nn.Module):
 
 if __name__ == '__main__':
     path = "D:/Python项目/CV-Programm-Deepfake-detection/dataset/real_vs_fake/real-vs-fake/test/fake"
-    loader = imageLoader(path, 1, 1)
+    loader = imageTensorLoader(path, 1, 1)
     test_image, test_label = next(loader)
     model = Meso4()
     output = model.forward(test_image)
