@@ -1,18 +1,20 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from FileLoader import imageTensorLoader
+from FileProcessor.FileLoader import imageTensorLoader
 import random
 from tqdm import tqdm
-from networks.mesonet import Meso4, MesoInception4
+from networks.mesonet import Meso4
 import matplotlib.pyplot as plt
-from functools import singledispatchmethod
+
+__all__ = ["MesoLoder"]
 
 
-class ModelLoader:
+class MesoLoder:
     """
     模型加载器，用于加载模型并保存模型。
     """
+
     def __init__(self, model=Meso4, model_path=None):
         """
         :param model: 选择采用模型(Meso4/MesoInception4)
@@ -137,9 +139,9 @@ class ModelLoader:
 
 
 if __name__ == '__main__':
-    trainer = ModelLoader(model=Meso4, model_path="models/model.pth")
+    trainer = MesoLoder(model=Meso4, model_path="../models/model.pth")
     test_loader = imageTensorLoader(
-        folder_path="dataset/real_vs_fake/real-vs-fake/test/real", label=0,
+        folder_path="../dataset/real_vs_fake/real-vs-fake/test/real", label=0,
         step=100)
     image, label = next(test_loader)
     result = trainer.model.forward(image)

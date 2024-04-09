@@ -1,8 +1,8 @@
 import cv2
-from ImageProcess import face_extract, image2tensor
-from VideoProcess import extract_frames_from_video
-from ModelLoader import ModelLoader
-from networks.mesonet import Meso4, MesoInception4
+from FileProcessor.ImageProcess import face_extract, image2tensor
+from FileProcessor.VideoProcess import extract_frames_from_video
+from ModelLoader import *
+from networks.mesonet import Meso4
 
 
 def detect_deepfakes(image):
@@ -10,7 +10,7 @@ def detect_deepfakes(image):
     检测图像是否为伪造
     """
     tensor = image2tensor(image)
-    model = ModelLoader(model=Meso4, model_path="models/model.pth")
+    model = MesoLoder(model=Meso4, model_path="models/model.pth")
     prediction = model.model.forward(tensor)
     prediction = prediction.item()
     return prediction

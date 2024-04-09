@@ -1,5 +1,7 @@
 import cv2
 
+__all__ = ["extract_frames_from_video"]
+
 
 def extract_frames_from_video(cap, interval):
     """

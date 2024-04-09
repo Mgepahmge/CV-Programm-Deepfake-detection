@@ -5,6 +5,8 @@ from PIL import Image
 import torch
 from torchvision import transforms
 
+__all__ = ["imageTensorLoader", "read_video_from_file"]
+
 
 def imageTensorLoader(folder_path: str, label: int, step: int = 1):
     images = []
@@ -37,7 +39,7 @@ def read_video_from_file(video_path):
 
 
 if __name__ == "__main__":
-    path = "D:/Python项目/CV-Programm-Deepfake-detection/dataset/real_vs_fake/real-vs-fake/test/fake"
+    path = "/dataset/real_vs_fake/real-vs-fake/test/fake"
     loader = imageTensorLoader(path, 1, 10)
     files, labels = next(loader)
     print(f"{files.shape} and {labels}")

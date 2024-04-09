@@ -1,12 +1,9 @@
-import os
-import argparse
-
 import torch
 import torch.nn as nn
-from FileLoader import imageTensorLoader
-import torch.nn.functional as F
-import math
-import torchvision
+
+from FileProcessor.FileLoader import imageTensorLoader
+
+__all__ = ['Meso4', 'MesoInception4']
 
 
 class Meso4(nn.Module):

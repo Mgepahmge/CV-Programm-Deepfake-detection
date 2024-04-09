@@ -1,9 +1,9 @@
-from ModelLoader import ModelLoader
-from networks.mesonet import Meso4, MesoInception4
+from networks import *
+from ModelLoader import *
 
 fake = "dataset/real_vs_fake/real-vs-fake/train/fake"
 real = "dataset/real_vs_fake/real-vs-fake/train/fake"
-model = ModelLoader(model=Meso4, model_path="models/model.pth")
+model = MesoLoder(model=Meso4, model_path="models/model.pth")
 
 
 def main():
@@ -13,4 +13,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-                                                                                                                                                                                                                            

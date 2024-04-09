@@ -2,10 +2,9 @@
 import math
 
 import torch
-import torch.functional as F
-
 from torch import nn
 
+__all__ = ["Xception"]
 
 class SeparableConv2d(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride, padding, dilation=1, bias=False):
